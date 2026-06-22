@@ -1,0 +1,248 @@
+<UserControl x:Class="WarehouseManagementSystem.Views.ReturnView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:viewmodels="clr-namespace:WarehouseManagementSystem.ViewModels"
+             mc:Ignorable="d" 
+             Background="#F5F5F5"
+             d:DataContext="{d:DesignInstance Type=viewmodels:ReturnViewModel}"
+             d:DesignHeight="700" d:DesignWidth="1100">
+    
+    <Grid Margin="25">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Başlık ve Filtreler -->
+        <Border Grid.Row="0" Background="White" CornerRadius="12" Padding="20" Margin="0,0,0,20">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="10" Opacity="0.1" ShadowDepth="2"/>
+            </Border.Effect>
+            <DockPanel>
+                <StackPanel>
+                    <TextBlock Text="🔄 İade Yönetimi" FontSize="24" FontWeight="Bold" Foreground="#311B92"/>
+                    <TextBlock Text="Ürün iadelerini kaydedin ve stok hareketlerini takip edin" Foreground="#757575" FontSize="13" Margin="0,4,0,0"/>
+                </StackPanel>
+                
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button Command="{Binding ExportToCsvCommand}" 
+                            Style="{StaticResource MaterialDesignFlatButton}"
+                            Foreground="#2E7D32" materialDesign:ButtonAssist.CornerRadius="8" Margin="0,0,10,0">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="FileExport" Margin="0,0,8,0"/>
+                            <TextBlock Text="Dışa Aktar (.CSV)"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding RefreshCommand}" 
+                            Style="{StaticResource MaterialDesignIconButton}"
+                            Foreground="#4527A0">
+                        <materialDesign:PackIcon Kind="Refresh"/>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="380"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- SOL: İade Kayıt Formu -->
+            <Border Grid.Column="0" Background="White" CornerRadius="12" Padding="25" Margin="0,0,20,0">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Opacity="0.1" ShadowDepth="2"/>
+                </Border.Effect>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="📥 Yeni İade Kaydı" FontSize="18" FontWeight="SemiBold" Foreground="#311B92" Margin="0,0,0,20"/>
+
+                        <!-- Ürün Seçimi -->
+                        <TextBlock Text="Ürün Seç" FontSize="12" FontWeight="SemiBold" Foreground="#757575" Margin="0,0,0,5"/>
+                        <TextBox Text="{Binding SearchProductText, UpdateSourceTrigger=PropertyChanged}"
+                                 materialDesign:HintAssist.Hint="Ürün adı veya SKU ara..."
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Margin="0,0,0,10"/>
+                        
+                        <ListBox ItemsSource="{Binding AvailableProducts}"
+                                 SelectedItem="{Binding SelectedProduct}"
+                                 Height="180" Margin="0,0,0,20"
+                                 BorderBrush="#EEEEEE" BorderThickness="1">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="12"/>
+                                            <TextBlock Text="{Binding SKU}" FontSize="10" Foreground="#9E9E9E"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="1" Text="{Binding StockQuantity, StringFormat='{}Stok: {0}'}" FontSize="10" VerticalAlignment="Center" Foreground="#757575"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+                        <Grid Margin="0,0,0,20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <!-- Miktar -->
+                            <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                <TextBlock Text="Miktar" FontSize="12" FontWeight="SemiBold" Foreground="#757575" Margin="0,0,0,5"/>
+                                <TextBox Text="{Binding Quantity}" 
+                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                         materialDesign:TextFieldAssist.HasClearButton="True"/>
+                            </StackPanel>
+
+                            <!-- Neden -->
+                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                <TextBlock Text="İade Nedeni" FontSize="12" FontWeight="SemiBold" Foreground="#757575" Margin="0,0,0,5"/>
+                                <ComboBox ItemsSource="{Binding Reasons}" 
+                                          SelectedItem="{Binding SelectedReason}"
+                                          Style="{StaticResource MaterialDesignOutlinedComboBox}"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Aksiyon -->
+                        <TextBlock Text="Uygulanacak İşlem" FontSize="12" FontWeight="SemiBold" Foreground="#757575" Margin="0,0,0,5"/>
+                        <ComboBox ItemsSource="{Binding Actions}" 
+                                  SelectedItem="{Binding SelectedAction}"
+                                  Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                  Margin="0,0,0,20">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock>
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text" Value="Stoka Geri Al"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding}" Value="HurdayaAyir">
+                                                        <Setter Property="Text" Value="Hurdaya Ayır (İmha)"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <!-- Açıklama -->
+                        <TextBlock Text="Açıklama (Opsiyonel)" FontSize="12" FontWeight="SemiBold" Foreground="#757575" Margin="0,0,0,5"/>
+                        <TextBox Text="{Binding Description}" 
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 AcceptsReturn="True" Height="80"
+                                 materialDesign:HintAssist.Hint="Müşteri notu, kusur detayı vb."
+                                 Margin="0,0,0,25"/>
+
+                        <Button Command="{Binding ProcessReturnCommand}" 
+                                Content="İADEYİ KAYDET" 
+                                FontSize="14" FontWeight="Bold"
+                                Height="45"
+                                Background="#311B92" BorderThickness="0"
+                                materialDesign:ButtonAssist.CornerRadius="8"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- SAĞ: İade Geçmişi -->
+            <Border Grid.Column="1" Background="White" CornerRadius="12" Padding="25">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Opacity="0.1" ShadowDepth="2"/>
+                </Border.Effect>
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="📜 İade Geçmişi" FontSize="18" FontWeight="SemiBold" Foreground="#311B92" Margin="0,0,0,20"/>
+                    
+                    <Grid DockPanel.Dock="Top" Margin="10,0,10,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="120"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="TARİH" FontSize="11" FontWeight="Bold" Foreground="#9E9E9E"/>
+                        <TextBlock Grid.Column="1" Text="ÜRÜN / SKU" FontSize="11" FontWeight="Bold" Foreground="#9E9E9E"/>
+                        <TextBlock Grid.Column="2" Text="MİKTAR" FontSize="11" FontWeight="Bold" Foreground="#9E9E9E"/>
+                        <TextBlock Grid.Column="3" Text="NEDEN" FontSize="11" FontWeight="Bold" Foreground="#9E9E9E"/>
+                        <TextBlock Grid.Column="4" Text="İŞLEM" FontSize="11" FontWeight="Bold" Foreground="#9E9E9E"/>
+                    </Grid>
+
+                    <Separator DockPanel.Dock="Top" Margin="0,0,0,10"/>
+
+                    <ListView ItemsSource="{Binding ReturnsHistory}" BorderThickness="0">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <Setter Property="Padding" Value="0,10"/>
+                                <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                <Setter Property="BorderBrush" Value="#F5F5F5"/>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="120"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <TextBlock Grid.Column="0" Text="{Binding CreatedAt, StringFormat='{}{0:dd.MM.yy HH:mm}'}" VerticalAlignment="Center" FontSize="11" Foreground="#757575"/>
+                                    
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding ProductName}" FontWeight="SemiBold" FontSize="12"/>
+                                        <TextBlock Text="{Binding SKU}" FontSize="10" Foreground="#9E9E9E"/>
+                                    </StackPanel>
+                                    
+                                    <TextBlock Grid.Column="2" Text="{Binding Quantity, StringFormat='{}{0} Adet'}" VerticalAlignment="Center" FontSize="12"/>
+                                    
+                                    <Border Grid.Column="3" Background="#F5F5F5" CornerRadius="4" Padding="6,2" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding ReasonDisplay}" FontSize="10" Foreground="#616161"/>
+                                    </Border>
+                                    
+                                    <Border Grid.Column="4" CornerRadius="4" Padding="6,2" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="#E8F5E9"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Action}" Value="HurdayaAyir">
+                                                        <Setter Property="Background" Value="#FFEBEE"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <TextBlock FontSize="10" FontWeight="SemiBold">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Text" Value="Stoka Alındı"/>
+                                                    <Setter Property="Foreground" Value="#2E7D32"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Action}" Value="HurdayaAyir">
+                                                            <Setter Property="Text" Value="İMHA / HURDA"/>
+                                                            <Setter Property="Foreground" Value="#C62828"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Border>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </DockPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

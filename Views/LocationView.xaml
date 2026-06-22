@@ -1,0 +1,216 @@
+<UserControl x:Class="WarehouseManagementSystem.Views.LocationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:WarehouseManagementSystem.Converters"
+             Background="#F5F5F5">
+    <UserControl.Resources>
+        <converters:FloorDisplayConverter x:Key="FloorDisplayConverter"/>
+    </UserControl.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <!-- Başlık -->
+            <RowDefinition Height="*"/>    <!-- İçerik -->
+        </Grid.RowDefinitions>
+
+        <!-- Başlık Bölümü -->
+        <TextBlock Grid.Row="0" Text="📍 Lokasyon ve Raf Yönetimi" 
+                   FontSize="22" FontWeight="Bold" Foreground="#311B92" Margin="0,0,0,20"/>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="350"/> <!-- Form -->
+                <ColumnDefinition Width="*"/>   <!-- Liste -->
+            </Grid.ColumnDefinitions>
+
+            <!-- Sol Panel: Ekleme/Düzenleme Formu -->
+            <Border Grid.Column="0" Background="White" CornerRadius="12" Margin="0,0,15,0" Padding="20">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Opacity="0.1" ShadowDepth="2"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="{Binding IsEditMode, Converter={StaticResource BooleanToEditTitleConverter}}" 
+                               FontSize="18" FontWeight="SemiBold" Foreground="#4527A0" Margin="0,0,0,20"/>
+
+                    <TextBox materialDesign:HintAssist.Hint="Lokasyon / Raf Adı (Örn: Raf-A-01)"
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             Text="{Binding EditName, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="0,0,0,15"/>
+
+                    <ComboBox materialDesign:HintAssist.Hint="Bölge (Ön/Orta/Arka)"
+                              Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                              ItemsSource="{Binding AvailableZones}"
+                              SelectedItem="{Binding EditZone, UpdateSourceTrigger=PropertyChanged}"
+                              Margin="0,0,0,15"/>
+
+                    <ComboBox materialDesign:HintAssist.Hint="Kat (1/2/3)"
+                              Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                              ItemsSource="{Binding AvailableFloors}"
+                              SelectedItem="{Binding EditFloor, UpdateSourceTrigger=PropertyChanged}"
+                              Margin="0,0,0,15">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={StaticResource FloorDisplayConverter}}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <TextBox materialDesign:HintAssist.Hint="Açıklama"
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             Text="{Binding EditDescription, UpdateSourceTrigger=PropertyChanged}"
+                             AcceptsReturn="True" Height="80"
+                             Margin="0,0,0,15"/>
+
+                    <TextBox materialDesign:HintAssist.Hint="Kapasite (Maks. Ürün Sayısı)"
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             Text="{Binding EditCapacityText, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="0,0,0,25"/>
+
+                    <Button Command="{Binding AddCommand}" Content="LOKASYON EKLE" 
+                            Visibility="{Binding IsEditMode, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                            Style="{StaticResource MaterialDesignFlatMidBgButton}" Background="#4527A0"/>
+
+                    <StackPanel Visibility="{Binding IsEditMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Button Command="{Binding UpdateCommand}" Content="GÜNCELLE" 
+                                Style="{StaticResource MaterialDesignFlatMidBgButton}" Background="#2E7D32" Margin="0,0,0,10"/>
+                        <Button Command="{Binding ClearCommand}" Content="VAZGEÇ / YENİ EKLE" 
+                                Style="{StaticResource MaterialDesignFlatButton}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Sağ Panel: Mevcut Lokasyonlar Listesi -->
+            <Border Grid.Column="1" Background="White" CornerRadius="12" Padding="20">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Opacity="0.1" ShadowDepth="2"/>
+                </Border.Effect>
+                <DockPanel>
+                    <Grid DockPanel.Dock="Top" Margin="10,0,10,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80"/>  <!-- Durum -->
+                            <ColumnDefinition Width="80"/>  <!-- Bölge -->
+                            <ColumnDefinition Width="70"/>  <!-- Kat -->
+                            <ColumnDefinition Width="130"/> <!-- Lokasyon Adı -->
+                            <ColumnDefinition Width="80"/>  <!-- Kapasite -->
+                            <ColumnDefinition Width="180"/> <!-- İçindeki Ürünler -->
+                            <ColumnDefinition Width="*"/>   <!-- Açıklama -->
+                            <ColumnDefinition Width="60"/>  <!-- İşlemler -->
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="DURUM" FontSize="11" FontWeight="Bold" Foreground="#9E9E9E"/>
+                        <TextBlock Grid.Column="1" Text="BÖLGE" FontSize="11" FontWeight="Bold" Foreground="#9E9E9E"/>
+                        <TextBlock Grid.Column="2" Text="KAT" FontSize="11" FontWeight="Bold" Foreground="#9E9E9E"/>
+                        <TextBlock Grid.Column="3" Text="LOKASYON" FontSize="11" FontWeight="Bold" Foreground="#9E9E9E"/>
+                        <TextBlock Grid.Column="4" Text="KAPASİTE" FontSize="11" FontWeight="Bold" Foreground="#9E9E9E"/>
+                        <TextBlock Grid.Column="5" Text="İÇİNDEKİ ÜRÜNLER" FontSize="11" FontWeight="Bold" Foreground="#9E9E9E"/>
+                        <TextBlock Grid.Column="6" Text="AÇIKLAMA" FontSize="11" FontWeight="Bold" Foreground="#9E9E9E"/>
+                        <TextBlock Grid.Column="7" Text="SİL" FontSize="11" FontWeight="Bold" Foreground="#9E9E9E" HorizontalAlignment="Center"/>
+                    </Grid>
+                    
+                    <Separator DockPanel.Dock="Top" Margin="0,0,0,10"/>
+
+                    <ListBox ItemsSource="{Binding Locations}" SelectedItem="{Binding SelectedLocation}"
+                             Background="Transparent" BorderThickness="0"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                <Setter Property="Padding" Value="10,8"/>
+                                <Setter Property="Margin" Value="0,0,0,5"/>
+                                <Setter Property="Cursor" Value="Hand"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition Width="70"/>
+                                        <ColumnDefinition Width="130"/>
+                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition Width="180"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="60"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <!-- Durum Badge -->
+                                    <Border Grid.Column="0" CornerRadius="4" Padding="6,2" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="#E8F5E9"/> <!-- Yeşil (Boş) -->
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsOccupied}" Value="True">
+                                                        <Setter Property="Background" Value="#FFEBEE"/> <!-- Kırmızı (Dolu) -->
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <TextBlock Text="{Binding Status}" FontSize="10" FontWeight="Bold">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Foreground" Value="#2E7D32"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsOccupied}" Value="True">
+                                                            <Setter Property="Foreground" Value="#C62828"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Border>
+
+                                    <!-- Bölge -->
+                                    <TextBlock Grid.Column="1" Text="{Binding Location.Zone}" FontSize="12" 
+                                               Foreground="#757575" VerticalAlignment="Center"/>
+
+                                    <!-- Kat -->
+                                    <TextBlock Grid.Column="2" Text="{Binding Location.Floor, Converter={StaticResource FloorDisplayConverter}}" FontSize="12" 
+                                               Foreground="#4527A0" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    
+                                    <!-- Lokasyon Adı -->
+                                    <TextBlock Grid.Column="3" Text="{Binding Location.Name}" FontWeight="Bold" 
+                                               FontSize="13" VerticalAlignment="Center"/>
+
+                                    <!-- Kapasite Info -->
+                                    <StackPanel Grid.Column="4" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding CapacityInfo}" FontSize="12" FontWeight="SemiBold"
+                                                   HorizontalAlignment="Left">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Foreground" Value="#757575"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsFull}" Value="True">
+                                                            <Setter Property="Foreground" Value="#C62828"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </StackPanel>
+
+                                    <!-- İçindeki Ürünler -->
+                                    <TextBlock Grid.Column="5" Text="{Binding OccupantInfo}" 
+                                               FontSize="12" Foreground="#311B92" VerticalAlignment="Center"
+                                               TextTrimming="CharacterEllipsis" FontWeight="Medium"/>
+
+                                    <!-- Açıklama -->
+                                    <TextBlock Grid.Column="6" Text="{Binding Location.Description}" 
+                                               FontSize="12" Foreground="#9E9E9E" VerticalAlignment="Center"
+                                               TextTrimming="CharacterEllipsis" FontStyle="Italic"/>
+
+                                    <!-- Sil Butonu -->
+                                    <Button Grid.Column="7" Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            Style="{StaticResource MaterialDesignIconButton}"
+                                            Foreground="#C62828" ToolTip="Sil" Width="30" Height="30"
+                                            Visibility="{Binding IsOccupied, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                                        <materialDesign:PackIcon Kind="Delete" Width="18" Height="18"/>
+                                    </Button>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

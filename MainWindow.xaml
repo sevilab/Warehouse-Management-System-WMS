@@ -1,0 +1,239 @@
+<Window x:Class="WarehouseManagementSystem.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:viewmodels="clr-namespace:WarehouseManagementSystem.ViewModels"
+        xmlns:views="clr-namespace:WarehouseManagementSystem.Views"
+        xmlns:converters="clr-namespace:WarehouseManagementSystem.Converters"
+        Title="Depo ve Stok Yönetim Sistemi"
+        Height="800" Width="1300"
+        WindowStartupLocation="CenterScreen"
+        Background="#F5F5F5">
+
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type viewmodels:DashboardViewModel}">
+            <views:DashboardView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodels:ProductViewModel}">
+            <views:ProductView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodels:SupplierViewModel}">
+            <views:SupplierView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodels:TransactionViewModel}">
+            <views:TransactionView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodels:UserViewModel}">
+            <views:UserManagementView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodels:LocationViewModel}">
+            <views:LocationView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodels:ReturnViewModel}">
+            <views:ReturnView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodels:PurchaseOrderViewModel}">
+            <views:PurchaseOrderView/>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="240"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- SOL SIDEBAR -->
+        <Border Grid.Column="0" Background="#4527A0">
+            <DockPanel>
+
+                <!-- Logo -->
+                <Border DockPanel.Dock="Top" Background="#311B92" Padding="20,25">
+                    <StackPanel>
+                        <TextBlock Text="📦" FontSize="36" HorizontalAlignment="Center"/>
+                        <TextBlock Text="DEPO YÖNETİM" Foreground="White"
+                                   FontSize="13" FontWeight="Bold"
+                                   HorizontalAlignment="Center" Margin="0,8,0,2"/>
+                        <TextBlock Text="SİSTEMİ" Foreground="#B39DDB"
+                                   FontSize="11" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Navigasyon -->
+                <StackPanel DockPanel.Dock="Top" Margin="0,20,0,0">
+                    <!-- Navigasyon Butonları -->
+                    <Button Height="52" HorizontalContentAlignment="Left"
+                            Padding="20,0" Background="Transparent"
+                            Foreground="White" BorderThickness="0"
+                            Cursor="Hand"
+                            Command="{Binding ShowDashboardCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="ViewDashboard" VerticalAlignment="Center" Margin="0,0,15,0"/>
+                            <TextBlock Text="Dashboard" VerticalAlignment="Center" FontSize="14"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Height="52" HorizontalContentAlignment="Left"
+                            Padding="20,0" Background="Transparent"
+                            Foreground="White" BorderThickness="0"
+                            Cursor="Hand"
+                            Command="{Binding ShowProductsCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="PackageVariantClosed" VerticalAlignment="Center" Margin="0,0,15,0"/>
+                            <TextBlock Text="Ürünler" VerticalAlignment="Center" FontSize="14"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Height="52" HorizontalContentAlignment="Left"
+                            Padding="20,0" Background="Transparent"
+                            Foreground="White" BorderThickness="0"
+                            Cursor="Hand"
+                            Command="{Binding ShowSuppliersCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Truck" VerticalAlignment="Center" Margin="0,0,15,0"/>
+                            <TextBlock Text="Tedarikçiler" VerticalAlignment="Center" FontSize="14"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Height="52" HorizontalContentAlignment="Left"
+                            Padding="20,0" Background="Transparent"
+                            Foreground="White" BorderThickness="0"
+                            Cursor="Hand"
+                            Command="{Binding ShowLocationsCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="MapMarker" VerticalAlignment="Center" Margin="0,0,15,0"/>
+                            <TextBlock Text="Lokasyonlar" VerticalAlignment="Center" FontSize="14"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Height="52" HorizontalContentAlignment="Left"
+                            Padding="20,0" Background="Transparent"
+                            Foreground="White" BorderThickness="0"
+                            Cursor="Hand"
+                            Command="{Binding ShowTransactionsCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="History" VerticalAlignment="Center" Margin="0,0,15,0"/>
+                            <TextBlock Text="İşlem Geçmişi" VerticalAlignment="Center" FontSize="14"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Height="52" HorizontalContentAlignment="Left"
+                            Padding="20,0" Background="Transparent"
+                            Foreground="White" BorderThickness="0"
+                            Cursor="Hand"
+                            Command="{Binding ShowReturnsCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="RotateLeft" VerticalAlignment="Center" Margin="0,0,15,0"/>
+                            <TextBlock Text="İade Yönetimi" VerticalAlignment="Center" FontSize="14"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Height="52" HorizontalContentAlignment="Left"
+                            Padding="20,0" Background="Transparent"
+                            Foreground="White" BorderThickness="0"
+                            Cursor="Hand"
+                            Command="{Binding ShowPurchaseOrdersCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Cart" VerticalAlignment="Center" Margin="0,0,15,0"/>
+                            <TextBlock Text="Sipariş Takibi" VerticalAlignment="Center" FontSize="14"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Height="52" HorizontalContentAlignment="Left"
+                            Padding="20,0" Background="Transparent"
+                            Foreground="White" BorderThickness="0"
+                            Cursor="Hand"
+                            Command="{Binding ShowUserManagementCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="AccountGroup" VerticalAlignment="Center" Margin="0,0,15,0"/>
+                            <TextBlock Text="Kullanıcılar" VerticalAlignment="Center" FontSize="14"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Çıkış Butonu -->
+                    <Button Height="52" HorizontalContentAlignment="Left"
+                            Padding="20,0" Background="Transparent"
+                            Foreground="#EF9A9A" BorderThickness="0"
+                            Cursor="Hand" Margin="0,20,0,0"
+                            Click="Logout_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Logout" VerticalAlignment="Center" Margin="0,0,15,0"/>
+                            <TextBlock Text="Çıkış Yap" VerticalAlignment="Center" FontSize="14"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <!-- Alt bilgi -->
+                <Border DockPanel.Dock="Bottom" Padding="20,15">
+                    <TextBlock Text="v1.0 — OOP &amp; Design Patterns"
+                               Foreground="#7E57C2" FontSize="10"
+                               HorizontalAlignment="Center"/>
+                </Border>
+
+            </DockPanel>
+        </Border>
+
+        <!-- SAĞ İÇERİK -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Üst Bar -->
+            <Border Grid.Row="0" Background="White" Padding="25,15">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="8" Opacity="0.1"
+                                      ShadowDepth="2" Direction="270"/>
+                </Border.Effect>
+                <DockPanel>
+                    <TextBlock Text="Depo ve Stok Yönetim Sistemi"
+                               FontSize="18" FontWeight="SemiBold"
+                               Foreground="#311B92" VerticalAlignment="Center"/>
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal"
+                                HorizontalAlignment="Right">
+                        <TextBlock Text="{Binding CurrentUserInfo}"
+                                   Foreground="#757575" FontSize="13"
+                                   VerticalAlignment="Center" Margin="0,0,15,0"/>
+                        <TextBlock Foreground="#757575" FontSize="13"
+                                   VerticalAlignment="Center">
+                            <TextBlock.Text>
+                                <Binding Source="{x:Static sys:DateTime.Now}"
+                                         StringFormat="📅 {0:dd MMMM yyyy}"
+                                         xmlns:sys="clr-namespace:System;assembly=mscorlib"/>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <!-- Uyarı Bandı -->
+            <Border Grid.Row="1" Background="#FF6F00" Padding="20,8"
+                    Visibility="{Binding HasAlert,
+                                 Converter={StaticResource BooleanToVisibilityConverter}}">
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Content="✕"
+                            Foreground="White" Background="Transparent"
+                            BorderThickness="0" Cursor="Hand"
+                            Click="DismissAlert_Click"/>
+                    <TextBlock Text="{Binding AlertMessage}"
+                               Foreground="White" FontWeight="Bold"
+                               VerticalAlignment="Center"/>
+                </DockPanel>
+            </Border>
+
+            <!-- Dinamik İçerik -->
+            <ContentControl Grid.Row="2" Content="{Binding CurrentView}">
+            </ContentControl>
+
+        </Grid>
+
+        <!-- BİLDİRİM (SNACKBAR) -->
+        <materialDesign:Snackbar Grid.Column="1"
+                                 MessageQueue="{Binding MainMessageQueue}"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Bottom"
+                                 Margin="0,0,0,20"/>
+    </Grid>
+</Window>

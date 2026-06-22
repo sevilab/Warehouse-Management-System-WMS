@@ -1,0 +1,235 @@
+<UserControl x:Class="WarehouseManagementSystem.Views.TransactionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             Background="#F5F5F5">
+
+    <Grid Margin="25">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,20">
+            <TextBlock Text="📋 İşlem Geçmişi" FontSize="20" FontWeight="Bold" Foreground="#311B92"/>
+            <Button Command="{Binding ExportCommand}"
+                    Style="{StaticResource MaterialDesignFlatButton}"
+                    Margin="20,0,0,0"
+                    Foreground="#2E7D32"
+                    ToolTip="Excel (CSV) Olarak Dışa Aktar">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="FileExport" VerticalAlignment="Center"/>
+                    <TextBlock Text="Dışa Aktar" Margin="5,0,0,0"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+
+        <!-- Özet Kartlar -->
+        <Grid Grid.Row="1" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="White" CornerRadius="12"
+                    Margin="0,0,10,0" Padding="20">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Opacity="0.1" ShadowDepth="2"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="📥 Toplam Giriş" Foreground="#757575" FontSize="13"/>
+                    <TextBlock Text="{Binding TotalIn, StringFormat='₺{0:N0}'}"
+                               FontSize="26" FontWeight="Bold"
+                               Foreground="#2E7D32" Margin="0,8,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="1" Background="White" CornerRadius="12"
+                    Margin="5,0,5,0" Padding="20">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Opacity="0.1" ShadowDepth="2"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="📤 Toplam Çıkış" Foreground="#757575" FontSize="13"/>
+                    <TextBlock Text="{Binding TotalOut, StringFormat='₺{0:N0}'}"
+                               FontSize="26" FontWeight="Bold"
+                               Foreground="#C62828" Margin="0,8,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="2" Background="White" CornerRadius="12"
+                    Margin="10,0,0,0" Padding="20">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Opacity="0.1" ShadowDepth="2"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="💰 Net Fark" Foreground="#757575" FontSize="13"/>
+                    <TextBlock Text="{Binding NetBalance, StringFormat='₺{0:N0}'}"
+                               FontSize="26" FontWeight="Bold"
+                               Foreground="#4527A0" Margin="0,8,0,0"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- Filtreler -->
+        <Border Grid.Row="2" Background="White" CornerRadius="12"
+                Padding="20" Margin="0,0,0,15">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="10" Opacity="0.1" ShadowDepth="2"/>
+            </Border.Effect>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Başlangıç:" VerticalAlignment="Center"
+                           Foreground="#757575" Margin="0,0,8,0"/>
+                <DatePicker SelectedDate="{Binding StartDate}" Width="140" Margin="0,0,20,0"/>
+                <TextBlock Text="Bitiş:" VerticalAlignment="Center"
+                           Foreground="#757575" Margin="0,0,8,0"/>
+                <DatePicker SelectedDate="{Binding EndDate}" Width="140" Margin="0,0,20,0"/>
+                <TextBlock Text="Tür:" VerticalAlignment="Center"
+                           Foreground="#757575" Margin="0,0,8,0"/>
+                <ComboBox ItemsSource="{Binding FilterTypes}"
+                          SelectedItem="{Binding FilterType}"
+                          Width="140" Margin="0,0,20,0"/>
+                <Button Content="🔄 Filtrele"
+                        Command="{Binding RefreshCommand}"
+                        Background="#4527A0" Foreground="White"
+                        BorderThickness="0" Padding="20,8"
+                        Cursor="Hand"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Ana İçerik: Liste ve Son İşlemler -->
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="320"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Sol: Filtrelenmiş İşlem Listesi -->
+            <Border Grid.Column="0" Background="White" CornerRadius="12" Padding="20" Margin="0,0,15,0">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Opacity="0.1" ShadowDepth="2"/>
+                </Border.Effect>
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="📂 Kayıt Filtreleme Sonuçları" FontSize="14" FontWeight="SemiBold" Foreground="#757575" Margin="0,0,0,15"/>
+                    <Grid x:Name="TransactionHeaderGrid" DockPanel.Dock="Top" Margin="10,0,10,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="70"/>
+                            <ColumnDefinition Width="90"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="50"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="TARİH" FontSize="11" FontWeight="Bold" Foreground="#9E9E9E"/>
+                        <TextBlock Grid.Column="1" Text="ÜRÜN ADI" FontSize="11" FontWeight="Bold" Foreground="#9E9E9E"/>
+                        <TextBlock Grid.Column="2" Text="TİP" FontSize="11" FontWeight="Bold" Foreground="#9E9E9E"/>
+                        <TextBlock Grid.Column="3" Text="MİKTAR" FontSize="11" FontWeight="Bold" Foreground="#9E9E9E"/>
+                        <TextBlock Grid.Column="4" Text="BİRİM FİYAT" FontSize="11" FontWeight="Bold" Foreground="#9E9E9E"/>
+                        <TextBlock Grid.Column="5" Text="TOPLAM" FontSize="11" FontWeight="Bold" Foreground="#9E9E9E"/>
+                        <TextBlock Grid.Column="6" Text="SİL" FontSize="11" FontWeight="Bold" Foreground="#9E9E9E" HorizontalAlignment="Center"/>
+                    </Grid>
+
+                    <Separator DockPanel.Dock="Top" Margin="0,0,0,8"/>
+
+                    <ListView ItemsSource="{Binding Transactions}" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <Setter Property="Padding" Value="0,8"/>
+                                <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                <Setter Property="BorderBrush" Value="#F5F5F5"/>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="130"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition Width="70"/>
+                                        <ColumnDefinition Width="90"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="50"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <TextBlock Grid.Column="0" Text="{Binding CreatedAt, StringFormat='{}{0:dd.MM.yyyy HH:mm}'}" VerticalAlignment="Center" FontSize="11"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding ProductName}" VerticalAlignment="Center" FontSize="12" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                    
+                                    <Border Grid.Column="2" CornerRadius="10" Padding="6,1" 
+                                            HorizontalAlignment="Left" VerticalAlignment="Center"
+                                            Background="{Binding TypeBackground}">
+                                        <TextBlock Text="{Binding TypeDisplay}" 
+                                                   Foreground="{Binding TypeColor}"
+                                                   FontSize="10" FontWeight="SemiBold"/>
+                                    </Border>
+                                    
+                                    <TextBlock Grid.Column="3" Text="{Binding Quantity}" VerticalAlignment="Center" FontSize="11"/>
+                                    <TextBlock Grid.Column="4" Text="{Binding UnitPrice, StringFormat='₺{0:N2}'}" VerticalAlignment="Center" FontSize="11"/>
+                                    <TextBlock Grid.Column="5" Text="{Binding TotalPrice, StringFormat='₺{0:N2}'}" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" Foreground="#311B92"/>
+
+                                    <Button Grid.Column="6" 
+                                            Command="{Binding DataContext.DeleteTransactionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}"
+                                            Style="{StaticResource MaterialDesignIconButton}"
+                                            Width="24" Height="24" Padding="0" Foreground="#C62828">
+                                        <materialDesign:PackIcon Kind="Delete" Width="14" Height="14"/>
+                                    </Button>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </DockPanel>
+            </Border>
+
+            <!-- Sağ: Son İşlemler (Yeni Eklendi) -->
+            <Border Grid.Column="1" Background="White" CornerRadius="12" Padding="20">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Opacity="0.1" ShadowDepth="2"/>
+                </Border.Effect>
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="📋 En Son Hareketler" FontSize="16" FontWeight="SemiBold" Foreground="#311B92" Margin="0,0,0,15"/>
+                    <Button DockPanel.Dock="Bottom" Style="{StaticResource MaterialDesignFlatButton}" Content="Tümünü Yenile" Command="{Binding RefreshCommand}" Foreground="#757575" FontSize="11" Margin="0,10,0,0"/>
+                    
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding RecentTransactions}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border CornerRadius="8" Padding="12,10" Margin="0,0,8,10"
+                                            Background="{Binding TypeBackground}">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding ProductName}" Foreground="#212121" FontWeight="SemiBold" FontSize="13" TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding TotalPrice, StringFormat='₺{0:N0}'}" Foreground="#4527A0" FontWeight="Bold" FontSize="13"/>
+                                            
+                                            <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="0,3,0,0">
+                                                <TextBlock Text="{Binding CreatedAt, StringFormat='{}{0:dd.MM HH:mm}'}" Foreground="#9E9E9E" FontSize="11"/>
+                                                <TextBlock Text="|" Foreground="#EEEEEE" Margin="8,0"/>
+                                                <TextBlock Text="{Binding TypeDisplay}" 
+                                                           Foreground="{Binding TypeColor}"
+                                                           FontSize="10" FontWeight="Bold"/>
+                                            </StackPanel>
+                                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Quantity, StringFormat='{}{0} Adet'}" Foreground="#757575" FontSize="11" VerticalAlignment="Bottom"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

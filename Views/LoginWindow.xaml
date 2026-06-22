@@ -1,0 +1,100 @@
+﻿<Window x:Class="WarehouseManagementSystem.Views.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:WarehouseManagementSystem.Converters"
+        Title="Giriş Yap" Height="500" Width="420"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="#F5F5F5">
+
+    <Window.Resources>
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Window.Resources>
+
+    <Grid>
+        <!-- Sol mor şerit -->
+        <Border Width="8" HorizontalAlignment="Left" Background="#4527A0"/>
+
+        <StackPanel Margin="50,40">
+
+            <!-- Logo -->
+            <TextBlock Text="📦" FontSize="48"
+                       HorizontalAlignment="Center" Margin="0,0,0,10"/>
+            <TextBlock Text="DEPO YÖNETİM SİSTEMİ"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="#311B92"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,4"/>
+            <TextBlock Text="Tekstil &amp; Giyim"
+                       FontSize="12" Foreground="#9E9E9E"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,40"/>
+
+            <!-- Kullanıcı Adı -->
+            <TextBlock Text="Kullanıcı Adı" Foreground="#757575"
+                       FontSize="12" Margin="0,0,0,6"/>
+            <Border Background="White" CornerRadius="8"
+                    BorderBrush="#E0E0E0" BorderThickness="1"
+                    Margin="0,0,0,16">
+                <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
+                         BorderThickness="0" Padding="12,10"
+                         FontSize="14" Background="Transparent"/>
+            </Border>
+
+            <!-- Şifre -->
+            <TextBlock Text="Şifre" Foreground="#757575"
+                       FontSize="12" Margin="0,0,0,6"/>
+            <Border Background="White" CornerRadius="8"
+                    BorderBrush="#E0E0E0" BorderThickness="1"
+                    Margin="0,0,0,8">
+                <PasswordBox x:Name="PasswordBox"
+                             BorderThickness="0" Padding="12,10"
+                             FontSize="14" Background="Transparent"
+                             PasswordChanged="PasswordBox_PasswordChanged"/>
+            </Border>
+
+            <!-- Hata Mesajı -->
+            <Border Background="#FFEBEE" CornerRadius="8"
+                    Padding="12,8" Margin="0,0,0,16"
+                    Visibility="{Binding HasError,
+                                 Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="{Binding ErrorMessage}"
+                           Foreground="#C62828" FontSize="13"
+                           TextWrapping="Wrap"/>
+            </Border>
+
+            <!-- Giriş Butonu -->
+            <Button Content="🔐 Giriş Yap"
+                    Command="{Binding LoginCommand}"
+                    Background="#4527A0" Foreground="White"
+                    BorderThickness="0" Padding="0,14"
+                    FontSize="14" FontWeight="SemiBold"
+                    Cursor="Hand" Margin="0,0,0,20">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#4527A0"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#311B92"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <!-- İpucu -->
+            <Border Background="#E8EAF6" CornerRadius="8" Padding="12,10">
+                <StackPanel>
+                    <TextBlock Text="🔑 Giriş Bilgileri" FontWeight="SemiBold"
+                               Foreground="#311B92" Margin="0,0,0,6"/>
+                    <TextBlock Text="Admin: admin / admin123"
+                               Foreground="#616161" FontSize="12"/>
+                    <TextBlock Text="Kullanıcı: kullanici / kullanici123"
+                               Foreground="#616161" FontSize="12"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </Grid>
+</Window>
